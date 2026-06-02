@@ -1697,9 +1697,9 @@ async function sendMessage() {
     chatHistory.push({ role: 'assistant', content: reply });
 
     // Deduct balance & save AI message to DB
-    await deductBalance();
+        deductBalance().catch(e => console.warn('[Balance] deduct failed:', e));
     if (currentChatId && currentUser) {
-      await saveMessageToDb(currentChatId, 'assistant', reply);
+      saveMessageToDb(currentChatId, 'assistant', reply).catch(e => console.warn('[DB] save failed:', e));
     }
 
   } catch (err) {
