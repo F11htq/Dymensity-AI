@@ -1116,6 +1116,7 @@ async function deductBalance() {
   }
   const newBalance = current - 1;
   const { error } = await sb.from('profiles').update({ balance: newBalance }).eq('id', currentUser.id);
+  console.log('[Balance]', error, currentUser.id, newBalance);
   console.log('[Balance] update result — error:', error, '| uid:', currentUser.id, '| newBalance:', newBalance);
   if (!error) {
     userProfile.balance = newBalance;
