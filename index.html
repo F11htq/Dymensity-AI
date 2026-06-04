@@ -1034,25 +1034,43 @@ async function onUserLogin(user) {
   updateUserUI();
 
   // Загружаем реальный профиль из БД в фоне
+// Загружаем реальный профиль из БД в фоне
   try {
-    const { data: profile, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
-    console.log('[Profile] DB result:', profile, error);
-    
+    const profileRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const profiles = await profileRes.json();
+    const profile = profiles[0] || null;
+    console.log('[Profile] DB result:', profile);
+
     if (profile) {
       await checkDailyReset(profile);
-      const { data: refreshed } = await sb.from('profiles').select('*').eq('id', user.id).single();
-      userProfile = refreshed || profile;
+      const refreshRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      const refreshed = (await refreshRes.json())[0] || profile;
+      userProfile = refreshed;
     } else {
       // Создаём профиль если нет
-      const { data: created } = await sb.from('profiles').insert({
+      const newProfile = {
         id: user.id,
         username: user.user_metadata?.user_name || user.email?.split('@')[0] || 'User',
         avatar_url: user.user_metadata?.avatar_url || null,
         balance: 20,
         is_paid: false,
         last_reset: new Date().toISOString().split('T')[0]
-      }).select().single();
-      userProfile = created || userProfile;
+      };
+      await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(newProfile)
+      });
+      userProfile = { ...userProfile, ...newProfile };
     }
     updateUserUI();
   } catch(e) {
@@ -1063,10 +1081,18 @@ async function onUserLogin(user) {
 }
 
 async function checkDailyReset(profile) {
-  if (profile.is_paid) return; // paid users no reset
+  if (profile.is_paid) return;
   const today = new Date().toISOString().split('T')[0];
   if (profile.last_reset !== today) {
-    await sb.from('profiles').update({ balance: 20, last_reset: today }).eq('id', profile.id);
+    await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${profile.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY
+      },
+      body: JSON.stringify({ balance: 20, last_reset: today })
+    });
   }
 }
 
