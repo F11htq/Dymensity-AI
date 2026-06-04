@@ -986,7 +986,7 @@ async function initAuth() {
       if (window.location.hash) {
         history.replaceState(null, '', window.location.pathname + window.location.search);
       }
-      await onUserLogin(session.user);
+      await onUserLogin(session.user, session.access_token);
     } else if (event === 'SIGNED_OUT') {
       showAuthScreen();
     }
@@ -996,7 +996,7 @@ async function initAuth() {
   const { data: { session } } = await sb.auth.getSession();
   console.log('[Auth] Current session:', session?.user?.email || 'none');
   if (session?.user) {
-    await onUserLogin(session.user);
+    await onUserLogin(session.user, session.access_token);
   } else {
     showAuthScreen();
   }
@@ -1018,7 +1018,7 @@ async function signOut() {
   await sb.auth.signOut();
 }
 
-async function onUserLogin(user) {
+async function onUserLogin(user, accessToken) {
   currentUser = user;
   document.getElementById('authScreen').style.display = 'none';
 
@@ -1035,7 +1035,8 @@ async function onUserLogin(user) {
 
   // Загружаем реальный профиль из БД в фоне
 // Загружаем реальный профиль из БД в фоне
-  try {
+   const authHeader = 'Bearer ' + (accessToken || SUPABASE_KEY);
+   try {
     const profileRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });
