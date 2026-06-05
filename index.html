@@ -975,6 +975,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = null;
 let userProfile = null;
 let currentChatId = null;
+let currentAccessToken = null;
 
 async function initAuth() {
   // Supabase v2 автоматически считывает токен из URL-хэша (#access_token=...)
