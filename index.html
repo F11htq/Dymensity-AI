@@ -1021,6 +1021,7 @@ async function signOut() {
 
 async function onUserLogin(user, accessToken) {
   currentUser = user;
+  currentAccessToken = accessToken || null;
   document.getElementById('authScreen').style.display = 'none';
 
   // Показываем UI сразу с данными из user_metadata — не ждём БД
@@ -1148,7 +1149,7 @@ async function deductBalance() {
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_KEY,
-        'Authorization': authHeader
+        'Authorization': 'Bearer ' + (currentAccessToken || SUPABASE_KEY)
       },
       body: JSON.stringify({ balance: newBalance })
     });
