@@ -756,6 +756,25 @@ input:checked + .theme-toggle-track + .theme-toggle-thumb {
   border: 1px solid rgba(123,111,255,0.25); border-radius: 4px;
   padding: 1px 6px; color: var(--accent1);
 }
+.wallet-badge-creator {
+  font-size: 10px; border-radius: 4px;
+  padding: 2px 8px; font-weight: 700; letter-spacing: 0.5px;
+  border: 1px solid transparent;
+  background: linear-gradient(#0d1117, #0d1117) padding-box,
+              linear-gradient(90deg, #ff6ec7, #a78bfa, #60a5fa, #34d399, #fbbf24, #ff6ec7) border-box;
+  background-size: 200% auto;
+  -webkit-background-clip: text, border-box;
+  background-clip: text, border-box;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(90deg, #ff6ec7, #a78bfa, #60a5fa, #34d399, #fbbf24, #ff6ec7),
+                    linear-gradient(90deg, #ff6ec7, #a78bfa, #60a5fa, #34d399, #fbbf24, #ff6ec7);
+  animation: creatorShine 3s linear infinite;
+}
+@keyframes creatorShine {
+  0%   { background-position: 0% center, 0% center; }
+  100% { background-position: 200% center, 200% center; }
+}
 .wallet-badge-paid {
   font-size: 10px; background: rgba(79,195,247,0.15);
   border: 1px solid rgba(79,195,247,0.3); border-radius: 4px;
@@ -1121,15 +1140,20 @@ function updateUserUI() {
   const bal = Math.max(0, Math.round(userProfile.balance * 10) / 10);
   document.getElementById('walletBalance').textContent = bal + ' ₽';
   
-  if (userProfile.is_paid) {
-    document.getElementById('walletBadge').className = 'wallet-badge-paid';
-    document.getElementById('walletBadge').textContent = 'PAID';
-    document.getElementById('walletInfo').textContent = 'Платный баланс';
-  } else {
-    document.getElementById('walletBadge').className = 'wallet-badge-free';
-    document.getElementById('walletBadge').textContent = 'FREE';
-    document.getElementById('walletInfo').textContent = 'Обновится завтра: +20 ₽';
-  }
+const isCreator = (userProfile.username || '').toLowerCase() === 'f11htq';
+if (isCreator) {
+  document.getElementById('walletBadge').className = 'wallet-badge-creator';
+  document.getElementById('walletBadge').textContent = 'The Creator';
+  document.getElementById('walletInfo').textContent = '👑 Создатель Dymensity AI';
+} else if (userProfile.is_paid) {
+  document.getElementById('walletBadge').className = 'wallet-badge-paid';
+  document.getElementById('walletBadge').textContent = 'PAID';
+  document.getElementById('walletInfo').textContent = 'Платный баланс';
+} else {
+  document.getElementById('walletBadge').className = 'wallet-badge-free';
+  document.getElementById('walletBadge').textContent = 'FREE';
+  document.getElementById('walletInfo').textContent = 'Обновится завтра: +20 ₽';
+}
 
   const noBalance = document.getElementById('noBalanceBar');
   noBalance.style.display = bal <= 0 ? 'block' : 'none';
