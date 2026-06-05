@@ -1139,7 +1139,14 @@ function updateUserUI() {
 
   const bal = Math.max(0, Math.round(userProfile.balance * 10) / 10);
   const isCreatorBal = (userProfile.username || '').toLowerCase() === 'f11htq';
-  document.getElementById('walletBalance').textContent = isCreatorBal ? '∞' : bal + ' ₽';
+  const balEl = document.getElementById('walletBalance');
+if (isCreatorBal) {
+  balEl.textContent = '∞';
+  balEl.style.cssText = 'font-size:26px;font-weight:900;background:linear-gradient(90deg,#ff6ec7,#a78bfa,#60a5fa,#34d399,#fbbf24,#ff6ec7);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:creatorShine 2.5s linear infinite;line-height:1;';
+} else {
+  balEl.textContent = bal + ' ₽';
+  balEl.style.cssText = '';
+}
   
 const isCreator = (userProfile.username || '').toLowerCase() === 'f11htq';
 if (isCreator) {
