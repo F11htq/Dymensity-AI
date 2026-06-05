@@ -1138,7 +1138,8 @@ function updateUserUI() {
   }
 
   const bal = Math.max(0, Math.round(userProfile.balance * 10) / 10);
-  document.getElementById('walletBalance').textContent = bal + ' ₽';
+  const isCreatorBal = (userProfile.username || '').toLowerCase() === 'f11htq';
+  document.getElementById('walletBalance').textContent = isCreatorBal ? '∞' : bal + ' ₽';
   
 const isCreator = (userProfile.username || '').toLowerCase() === 'f11htq';
 if (isCreator) {
