@@ -1045,7 +1045,7 @@ async function onUserLogin(user, accessToken) {
     console.log('[Profile] DB result:', profile);
 
     if (profile) {
-      await checkDailyReset(profile);
+      await checkDailyReset(profile, authHeader);
       const refreshRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}`, {
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': authHeader }
       });
@@ -1081,7 +1081,7 @@ async function onUserLogin(user, accessToken) {
   await loadChatHistory().catch(e => console.warn('[History] Load failed:', e));
 }
 
-async function checkDailyReset(profile) {
+async function checkDailyReset(profile, authHeader) {
   if (profile.is_paid) return;
   const today = new Date().toISOString().split('T')[0];
   if (profile.last_reset !== today) {
