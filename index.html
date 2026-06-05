@@ -1146,7 +1146,7 @@ const isCreator = (userProfile.username || '').toLowerCase() === 'f11htq';
 if (isCreator) {
   document.getElementById('walletBadge').className = 'wallet-badge-creator';
   document.getElementById('walletBadge').textContent = 'The Creator';
-  document.getElementById('walletInfo').textContent = '👑 Создатель Dymensity AI';
+  document.getElementById('walletInfo').textContent = '';
 } else if (userProfile.is_paid) {
   document.getElementById('walletBadge').className = 'wallet-badge-paid';
   document.getElementById('walletBadge').textContent = 'PAID';
